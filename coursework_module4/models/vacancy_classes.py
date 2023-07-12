@@ -1,11 +1,10 @@
 class Vacancy:
-    vacancy_id = 0
 
-    def __init__(self, title, url, salary_from, salary_to, currency, address, requirements):
-        self.__vacancy_id = Vacancy.vacancy_id
-        Vacancy.vacancy_id += 1
+    def __init__(self, vacancy_id, title, url, published_at, salary_from, salary_to, currency, address, requirements):
+        self.__vacancy_id = vacancy_id
         self.__title: str = title
         self.__url: str = url
+        self.__published_at = published_at
         self.__salary_from: int = salary_from
         self.__salary_to: int = salary_to
 
@@ -17,54 +16,95 @@ class Vacancy:
         else:
             self.__salary_to_compare = self.__salary_to
         self.__currency: str = currency
-        self._address: str = address
+        self.__address: str = address
         self.__requirements: str = requirements
 
-    def __lt__(self, other):
-        if issubclass(other.__class__, self.__class__):
-            if self.__salary_to_compare < other.__salary_to_compare:
-                return True
-            else:
-                return False
+    @property
+    def vacancy_id(self):
+        return self.__vacancy_id
+
+    @property
+    def title(self):
+        return self.__title
+
+    @property
+    def url(self):
+        return self.__url
+
+    @property
+    def published_at(self):
+        return self.__published_at
+
+    @property
+    def salary_from(self):
+        return self.__salary_from
+
+    @property
+    def salary_to(self):
+        return self.__salary_to
+
+    @property
+    def salary_to_compare(self):
+        return self.__salary_to_compare
+
+    @property
+    def currency(self):
+        return self.__currency
+
+    @property
+    def address(self):
+        return self.__address
+
+    @property
+    def requirements(self):
+        return self.__requirements
+
+
+def __lt__(self, other):
+    if issubclass(other.__class__, self.__class__):
+        if self.__salary_to_compare < other.__salary_to_compare:
+            return True
         else:
-            raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
+            return False
+    else:
+        raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
 
-    def __le__(self, other):
-        if issubclass(other.__class__, self.__class__):
-            if self.__salary_to_compare <= other.__salary_to_compare:
-                return True
-            else:
-                return False
+
+def __le__(self, other):
+    if issubclass(other.__class__, self.__class__):
+        if self.__salary_to_compare <= other.__salary_to_compare:
+            return True
         else:
-            raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
+            return False
+    else:
+        raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
 
-    def __eq__(self, other):
-        if issubclass(other.__class__, self.__class__):
-            if self.__salary_to_compare == other.__salary_to_compare:
-                return True
-            else:
-                return False
+
+def __eq__(self, other):
+    if issubclass(other.__class__, self.__class__):
+        if self.__salary_to_compare == other.__salary_to_compare:
+            return True
         else:
-            raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
+            return False
+    else:
+        raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
 
-    def __gt__(self, other):
-        if issubclass(other.__class__, self.__class__):
-            if self.__salary_to_compare > other.__salary_to_compare:
-                return True
-            else:
-                return False
+
+def __gt__(self, other):
+    if issubclass(other.__class__, self.__class__):
+        if self.__salary_to_compare > other.__salary_to_compare:
+            return True
         else:
-            raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
+            return False
+    else:
+        raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
 
-    def __ge__(self, other):
-        if issubclass(other.__class__, self.__class__):
-            if self.__salary_to_compare >= other.__salary_to_compare:
-                return True
-            else:
-                return False
+
+def __ge__(self, other):
+    if issubclass(other.__class__, self.__class__):
+        if self.__salary_to_compare >= other.__salary_to_compare:
+            return True
         else:
-            raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
-
-
-
-
+            return False
+    else:
+        raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
