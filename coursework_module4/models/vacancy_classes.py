@@ -152,7 +152,7 @@ class Vacancy:
                 responsibility = "Обязанности: " + vacancy["snippet"]["responsibility"]
             requirements = requirement + responsibility
             hh_vacancy = cls(vacancy_id, title, url, published_at, salary_from, salary_to, currency, address,
-                                 requirements)
+                             requirements)
             arr_vacancies.append(hh_vacancy)
         return arr_vacancies
 
@@ -188,6 +188,30 @@ class Vacancy:
                 address = vacancy["address"]
             requirements = vacancy["candidat"]
             hh_vacancy = cls(vacancy_id, title, url, published_at, salary_from, salary_to, currency, address,
-                                 requirements)
+                             requirements)
             arr_vacancies.append(hh_vacancy)
         return arr_vacancies
+
+    @staticmethod
+    def get_top_vacancies(parsed_vacs_arr):
+        if len(parsed_vacs_arr) == 0:
+            print("В списке нет вакансий\n")
+            return parsed_vacs_arr
+        top_number = int(input("Введите чисо N вакансий: "))
+        counter = 1
+        sorted_arr = []
+        while counter <= top_number:
+            max_salary_vacancy = parsed_vacs_arr[0]
+
+            for vacancy in parsed_vacs_arr:
+                if vacancy >= max_salary_vacancy:
+                    max_salary_vacancy = vacancy
+
+            parsed_vacs_arr.remove(max_salary_vacancy)
+            sorted_arr.append(max_salary_vacancy)
+            counter += 1
+            if len(parsed_vacs_arr) == 0:
+                break
+
+        print(f"Получен отсортированный список из {counter - 1} элементов\n")
+        return sorted_arr

@@ -9,7 +9,7 @@ superjob_api_key = os.getenv('SUPERJOB_API_KEY')
 
 class VacancySiteAPI(ABC):
     @abstractmethod
-    def get_vacancies(self, prog_lang):
+    def get_vacancies(self, search_query, per_page):
         pass
 
 
@@ -18,8 +18,8 @@ class HeadHunterAPI(VacancySiteAPI):
     def __init__(self):
         self.__vacancies = None
 
-    def get_vacancies(self, prog_lang):
-        vacancies = requests.get(f'https://api.hh.ru/vacancies?text={prog_lang}&per_page=2')
+    def get_vacancies(self, search_query, per_page):
+        vacancies = requests.get(f'https://api.hh.ru/vacancies?text={search_query}&per_page={per_page}')
         self.__vacancies = vacancies.json()
         return self.__vacancies
 
@@ -28,9 +28,9 @@ class SuperJobAPI(VacancySiteAPI):
     def __init__(self):
         self.__vacancies = None
 
-    def get_vacancies(self, prog_lang):
+    def get_vacancies(self, search_query, per_page):
         headers = {'X-Api-App-Id': f'{superjob_api_key}'}
-        vacancies = requests.get(f'https://api.superjob.ru/2.0/vacancies/?keyword={prog_lang}&count=2',
+        vacancies = requests.get(f'https://api.superjob.ru/2.0/vacancies/?keyword={search_query}&count={per_page}',
                                  headers=headers)
         self.__vacancies = vacancies.json()
         return self.__vacancies
