@@ -7,12 +7,12 @@ class Saver(ABC):
 
     @classmethod
     @abstractmethod
-    def write_vacancies_json(cls, vacancies):
+    def write_vacancies(cls, vacancies):
         pass
 
     @classmethod
     @abstractmethod
-    def add_vacancies_json(cls, vacancies):
+    def add_vacancies(cls, vacancies):
         pass
 
     @classmethod
@@ -20,17 +20,20 @@ class Saver(ABC):
     def delete_vacancy(cls, vacancy_id):
         pass
 
-    # @abstractmethod
-    # def get_vacancies_be_equal_salary(self):
-    #     pass
-    #
-    # @abstractmethod
-    # def get_vacancies_by_bigger_salary(self):
-    #     pass
-    #
-    # @abstractmethod
-    # def delete_vacancy_by_id(self):
-    #     pass
+    @classmethod
+    @abstractmethod
+    def get_vacancies_be_same_salary(cls, user_value):
+        pass
+
+    @classmethod
+    @abstractmethod
+    def get_vacancies_by_same_or_bigger_salary(cls, user_value):
+        pass
+
+    @classmethod
+    @abstractmethod
+    def sort_vacancies_by_keywords(cls, keywords_arr, switch):
+        pass
 
 
 class JSONSaver(Saver):
@@ -64,13 +67,13 @@ class JSONSaver(Saver):
         return dict_vacancies
 
     @classmethod
-    def write_vacancies_json(cls, vacancies):
+    def write_vacancies(cls, vacancies):
         json_vacancies_arr = cls.create_json_format(vacancies)
         dict_vacancies = {"items": json_vacancies_arr}
         cls.json_dump(dict_vacancies)
 
     @classmethod
-    def add_vacancies_json(cls, vacancies_to_add):
+    def add_vacancies(cls, vacancies_to_add):
         dict_vacancies = cls.json_load()
         old_vacancies = dict_vacancies["items"]
         new_vacancies = cls.create_json_format(vacancies_to_add)
@@ -91,4 +94,63 @@ class JSONSaver(Saver):
         dict_vacancies["items"] = arr_vacancies
         cls.json_dump(dict_vacancies)
         return deleted_vacancy
+
+    @classmethod
+    def get_vacancies_be_same_salary(cls, user_value: int):
+        dict_vacancies = cls.json_load()
+        arr_vacancies = dict_vacancies["items"]
+        chosen_vacancies = []
+        for vacancy in arr_vacancies:
+            if int(vacancy["salary_from"]) == user_value or int(vacancy["salary_to"]) == user_value:
+                chosen_vacancies.append(vacancy)
+
+        dict_vacancies["items"] = chosen_vacancies
+        with open(os.path.join("..", "files", "vacancies_by_same_salary.json"), "w", encoding='utf-8') as f:
+            json.dump(dict_vacancies, f, ensure_ascii=False)
+
+    @classmethod
+    def get_vacancies_by_same_or_bigger_salary(cls, user_value: int):
+        dict_vacancies = cls.json_load()
+        arr_vacancies = dict_vacancies["items"]
+        chosen_vacancies = []
+        for vacancy in arr_vacancies:
+            if int(vacancy["salary_to"]) >= user_value:
+                chosen_vacancies.append(vacancy)
+
+        dict_vacancies["items"] = chosen_vacancies
+        with open(os.path.join("..", "files", "vacancies_by_same_or_bigger_salary.json"), "w", encoding='utf-8') as f:
+            json.dump(dict_vacancies, f, ensure_ascii=False)
+
+    @classmethod
+    def sort_vacancies_by_keywords(cls, keywords_arr, switch):
+        if switch == "1":
+            dict_vacancies = cls.json_load()
+        elif switch == "2":
+            with open(os.path.join("..", "files", "vacancies_by_same_salary.json"), "r", encoding='utf-8') as f:
+                dict_vacancies = json.load(f)
+        elif switch == "3":
+            with open(os.path.join("..", "files", "vacancies_by_same_or_bigger_salary.json"), "r", encoding='utf-8') as f:
+                dict_vacancies = json.load(f)
+        else:
+            raise ValueError("Переменная switch выходит за допустимые лимиты")
+
+        arr_vacancies = dict_vacancies["items"]
+        vacancies_with_keywords = []
+
+        for keyword in keywords_arr:
+            for vacancy in arr_vacancies:
+                if keyword in vacancy["requirements"]:
+                    vacancies_with_keywords.append(vacancy)
+
+            arr_vacancies = vacancies_with_keywords
+            vacancies_with_keywords = []
+        if not arr_vacancies:
+            print("Нет вакансий, подходящих по заданным ключевым словам\n")
+        else:
+            dict_vacancies["items"] = arr_vacancies
+            with open(os.path.join("..", "files", "vacancies_with_keywords.json"), "w", encoding='utf-8') as f:
+                json.dump(dict_vacancies, f, ensure_ascii=False)
+            print("Подходящие вакансии записаны в файл vacancies_with_keywords.json\n")
+
+
 

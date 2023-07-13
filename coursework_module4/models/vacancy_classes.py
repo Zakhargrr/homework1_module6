@@ -171,7 +171,7 @@ class Vacancy:
                 salary_to = 0
                 currency = ""
             else:
-                currency = str.upper(vacancy["currency"])
+                currency = vacancy["currency"].upper()
                 if vacancy["payment_from"] is None:
                     salary_from = 0
                     salary_to = int(vacancy["payment_to"])
