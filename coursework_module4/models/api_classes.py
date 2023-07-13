@@ -19,7 +19,7 @@ class HeadHunterAPI(VacancySiteAPI):
         self.__vacancies = None
 
     def get_vacancies(self, prog_lang):
-        vacancies = requests.get(f'https://api.hh.ru/vacancies?text={prog_lang}&per_page=100')
+        vacancies = requests.get(f'https://api.hh.ru/vacancies?text={prog_lang}&per_page=2')
         self.__vacancies = vacancies.json()
         return self.__vacancies
 
@@ -30,7 +30,7 @@ class SuperJobAPI(VacancySiteAPI):
 
     def get_vacancies(self, prog_lang):
         headers = {'X-Api-App-Id': f'{superjob_api_key}'}
-        vacancies = requests.get(f'https://api.superjob.ru/2.0/vacancies/?keyword={prog_lang}&count=4',
+        vacancies = requests.get(f'https://api.superjob.ru/2.0/vacancies/?keyword={prog_lang}&count=2',
                                  headers=headers)
         self.__vacancies = vacancies.json()
         return self.__vacancies

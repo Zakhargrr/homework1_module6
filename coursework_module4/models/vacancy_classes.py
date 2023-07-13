@@ -1,3 +1,6 @@
+import datetime
+
+
 class Vacancy:
 
     def __init__(self, vacancy_id, title, url, published_at, salary_from, salary_to, currency, address, requirements):
@@ -59,52 +62,132 @@ class Vacancy:
     def requirements(self):
         return self.__requirements
 
-
-def __lt__(self, other):
-    if issubclass(other.__class__, self.__class__):
-        if self.__salary_to_compare < other.__salary_to_compare:
-            return True
+    def __lt__(self, other):
+        if issubclass(other.__class__, self.__class__):
+            if self.__salary_to_compare < other.__salary_to_compare:
+                return True
+            else:
+                return False
         else:
-            return False
-    else:
-        raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
+            raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
 
-
-def __le__(self, other):
-    if issubclass(other.__class__, self.__class__):
-        if self.__salary_to_compare <= other.__salary_to_compare:
-            return True
+    def __le__(self, other):
+        if issubclass(other.__class__, self.__class__):
+            if self.__salary_to_compare <= other.__salary_to_compare:
+                return True
+            else:
+                return False
         else:
-            return False
-    else:
-        raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
+            raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
 
-
-def __eq__(self, other):
-    if issubclass(other.__class__, self.__class__):
-        if self.__salary_to_compare == other.__salary_to_compare:
-            return True
+    def __eq__(self, other):
+        if issubclass(other.__class__, self.__class__):
+            if self.__salary_to_compare == other.__salary_to_compare:
+                return True
+            else:
+                return False
         else:
-            return False
-    else:
-        raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
+            raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
 
-
-def __gt__(self, other):
-    if issubclass(other.__class__, self.__class__):
-        if self.__salary_to_compare > other.__salary_to_compare:
-            return True
+    def __gt__(self, other):
+        if issubclass(other.__class__, self.__class__):
+            if self.__salary_to_compare > other.__salary_to_compare:
+                return True
+            else:
+                return False
         else:
-            return False
-    else:
-        raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
+            raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
 
-
-def __ge__(self, other):
-    if issubclass(other.__class__, self.__class__):
-        if self.__salary_to_compare >= other.__salary_to_compare:
-            return True
+    def __ge__(self, other):
+        if issubclass(other.__class__, self.__class__):
+            if self.__salary_to_compare >= other.__salary_to_compare:
+                return True
+            else:
+                return False
         else:
-            return False
-    else:
-        raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
+            raise TypeError("Вторая вакансия не является экземпляром подходящего класса.")
+
+    @classmethod
+    def initialize_hh_vacancies(cls, vacancies):
+        arr_vacancies = []
+        for vacancy in vacancies:
+            vacancy_id = vacancy["id"]
+            title = vacancy["name"]
+            url = vacancy["apply_alternate_url"]
+            data = vacancy["published_at"]
+            published_at = data[8:10] + "." + data[5:7] + "." + data[0:4]
+            if vacancy["salary"] is None:
+                salary_from = 0
+                salary_to = 0
+                currency = ""
+            else:
+                if vacancy["salary"]["currency"] == "RUR":
+                    currency = "RUB"
+                else:
+                    currency = vacancy["salary"]["currency"]
+
+                if vacancy["salary"]["from"] is None:
+                    salary_from = 0
+                    salary_to = int(vacancy["salary"]["to"])
+                elif vacancy["salary"]["to"] is None:
+                    salary_from = int(vacancy["salary"]["from"])
+                    salary_to = 0
+                else:
+                    salary_from = int(vacancy["salary"]["from"])
+                    salary_to = int(vacancy["salary"]["to"])
+
+            if vacancy["address"] is None:
+                address = ""
+            else:
+                address = vacancy["address"]["raw"]
+
+            if vacancy["snippet"]["requirement"] is None:
+                requirement = ""
+            else:
+                requirement = "Требования: " + vacancy["snippet"]["requirement"] + "\n"
+
+            if vacancy["snippet"]["responsibility"] is None:
+                responsibility = ""
+            else:
+                responsibility = "Обязанности: " + vacancy["snippet"]["responsibility"]
+            requirements = requirement + responsibility
+            hh_vacancy = cls(vacancy_id, title, url, published_at, salary_from, salary_to, currency, address,
+                                 requirements)
+            arr_vacancies.append(hh_vacancy)
+        return arr_vacancies
+
+    @classmethod
+    def initialize_superjob_vacancies(cls, vacancies):
+        arr_vacancies = []
+        for vacancy in vacancies:
+            vacancy_id = str(vacancy["id"])
+            title = vacancy["profession"]
+            url = vacancy["link"]
+            data = vacancy["date_published"]
+            value = datetime.datetime.fromtimestamp(data)
+            published_at = value.strftime('%d.%m.%Y')
+            if vacancy["payment_to"] is None and vacancy["payment_from"] is None:
+                salary_from = 0
+                salary_to = 0
+                currency = ""
+            else:
+                currency = str.upper(vacancy["currency"])
+                if vacancy["payment_from"] is None:
+                    salary_from = 0
+                    salary_to = int(vacancy["payment_to"])
+
+                elif vacancy["payment_to"] is None:
+                    salary_from = int(vacancy["payment_from"])
+                    salary_to = 0
+                else:
+                    salary_from = int(vacancy["payment_from"])
+                    salary_to = int(vacancy["payment_to"])
+            if vacancy["address"] is None:
+                address = ""
+            else:
+                address = vacancy["address"]
+            requirements = vacancy["candidat"]
+            hh_vacancy = cls(vacancy_id, title, url, published_at, salary_from, salary_to, currency, address,
+                                 requirements)
+            arr_vacancies.append(hh_vacancy)
+        return arr_vacancies
