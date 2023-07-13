@@ -1,4 +1,3 @@
-import json
 import os
 from abc import ABC, abstractmethod
 
@@ -19,7 +18,7 @@ class HeadHunterAPI(VacancySiteAPI):
         self.__vacancies = None
 
     def get_vacancies(self, search_query, per_page):
-        vacancies = requests.get(f'https://api.hh.ru/vacancies?text={search_query}&per_page={per_page}')
+        vacancies = requests.get(f'https://api.hh.ru/vacancies?area=113&text={search_query}&per_page={per_page}')
         self.__vacancies = vacancies.json()
         return self.__vacancies
 
