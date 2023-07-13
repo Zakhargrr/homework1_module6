@@ -29,7 +29,7 @@ class SuperJobAPI(VacancySiteAPI):
 
     def get_vacancies(self, search_query, per_page):
         headers = {'X-Api-App-Id': f'{superjob_api_key}'}
-        vacancies = requests.get(f'https://api.superjob.ru/2.0/vacancies/?keyword={search_query}&count={per_page}',
+        vacancies = requests.get(f'https://api.superjob.ru/2.0/vacancies/?c=1&keyword={search_query}&count={per_page}',
                                  headers=headers)
         self.__vacancies = vacancies.json()
         return self.__vacancies
