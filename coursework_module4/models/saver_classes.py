@@ -17,7 +17,7 @@ class Saver(ABC):
 
     @classmethod
     @abstractmethod
-    def delete_vacancy(cls, vacancy_id):
+    def delete_vacancy(cls, vacancy_id, switch):
         pass
 
     @classmethod
@@ -56,13 +56,46 @@ class JSONSaver(Saver):
         return json_vacancies_arr
 
     @staticmethod
-    def json_dump(dict_vacancies):
+    def vacancies_json_dump(dict_vacancies):
         with open(os.path.join("..", "files", "vacancies.json"), "w", encoding='utf-8') as f:
             json.dump(dict_vacancies, f, ensure_ascii=False)
 
     @staticmethod
-    def json_load():
+    def vacancies_json_load():
         with open(os.path.join("..", "files", "vacancies.json"), "r", encoding='utf-8') as f:
+            dict_vacancies = json.load(f)
+        return dict_vacancies
+
+    @staticmethod
+    def vacancies_by_same_salary_json_dump(dict_vacancies):
+        with open(os.path.join("..", "files", "vacancies_by_same_salary.json"), "w", encoding='utf-8') as f:
+            json.dump(dict_vacancies, f, ensure_ascii=False)
+
+    @staticmethod
+    def vacancies_by_same_salary_json_load():
+        with open(os.path.join("..", "files", "vacancies_by_same_salary.json"), "r", encoding='utf-8') as f:
+            dict_vacancies = json.load(f)
+        return dict_vacancies
+
+    @staticmethod
+    def vacancies_by_same_or_bigger_salary_json_dump(dict_vacancies):
+        with open(os.path.join("..", "files", "vacancies_by_same_or_bigger_salary.json"), "w", encoding='utf-8') as f:
+            json.dump(dict_vacancies, f, ensure_ascii=False)
+
+    @staticmethod
+    def vacancies_by_same_or_bigger_salary_json_load():
+        with open(os.path.join("..", "files", "vacancies_by_same_or_bigger_salary.json"), "r", encoding='utf-8') as f:
+            dict_vacancies = json.load(f)
+        return dict_vacancies
+
+    @staticmethod
+    def vacancies_with_keywords_json_dump(dict_vacancies):
+        with open(os.path.join("..", "files", "vacancies_with_keywords.json"), "w", encoding='utf-8') as f:
+            json.dump(dict_vacancies, f, ensure_ascii=False)
+
+    @staticmethod
+    def vacancies_with_keywords_json_load():
+        with open(os.path.join("..", "files", "vacancies_with_keywords.json"), "r", encoding='utf-8') as f:
             dict_vacancies = json.load(f)
         return dict_vacancies
 
@@ -70,34 +103,51 @@ class JSONSaver(Saver):
     def write_vacancies(cls, vacancies):
         json_vacancies_arr = cls.create_json_format(vacancies)
         dict_vacancies = {"items": json_vacancies_arr}
-        cls.json_dump(dict_vacancies)
+        cls.vacancies_json_dump(dict_vacancies)
 
     @classmethod
     def add_vacancies(cls, vacancies_to_add):
-        dict_vacancies = cls.json_load()
+        dict_vacancies = cls.vacancies_json_load()
         old_vacancies = dict_vacancies["items"]
         new_vacancies = cls.create_json_format(vacancies_to_add)
         vacancies_total = old_vacancies + new_vacancies
         dict_vacancies["items"] = vacancies_total
-        cls.json_dump(dict_vacancies)
+        cls.vacancies_json_dump(dict_vacancies)
 
     @classmethod
-    def delete_vacancy(cls, vacancy_id):
-        dict_vacancies = cls.json_load()
-        arr_vacancies = dict_vacancies["items"]
+    def delete_vacancy(cls, vacancy_id, switch):
+        arr_vacancies = cls.return_arr_from_file(switch)
+        if arr_vacancies is None:
+            return None
         vacancy_counter = 0
         deleted_vacancy = None
         for vacancy in arr_vacancies:
             if vacancy["id"] == vacancy_id:
                 deleted_vacancy = arr_vacancies.pop(vacancy_counter)
             vacancy_counter += 1
-        dict_vacancies["items"] = arr_vacancies
-        cls.json_dump(dict_vacancies)
-        return deleted_vacancy
+        if deleted_vacancy is None:
+            print("Вакансии с таким ID нет в файле\n")
+            return None
+        dict_vacancies = {"items": arr_vacancies}
+        if switch == "1":
+            cls.vacancies_json_dump(dict_vacancies)
+            return deleted_vacancy
+        elif switch == "2":
+            cls.vacancies_by_same_salary_json_dump(dict_vacancies)
+            return deleted_vacancy
+        elif switch == "3":
+            cls.vacancies_by_same_or_bigger_salary_json_dump(dict_vacancies)
+            return deleted_vacancy
+        elif switch == "4":
+            cls.vacancies_with_keywords_json_dump(dict_vacancies)
+            return deleted_vacancy
+        else:
+            print("Переменная switch выходит за допустимые лимиты")
+            return None
 
     @classmethod
     def get_vacancies_be_same_salary(cls, user_value: int):
-        dict_vacancies = cls.json_load()
+        dict_vacancies = cls.vacancies_json_load()
         arr_vacancies = dict_vacancies["items"]
         chosen_vacancies = []
         for vacancy in arr_vacancies:
@@ -105,12 +155,11 @@ class JSONSaver(Saver):
                 chosen_vacancies.append(vacancy)
 
         dict_vacancies["items"] = chosen_vacancies
-        with open(os.path.join("..", "files", "vacancies_by_same_salary.json"), "w", encoding='utf-8') as f:
-            json.dump(dict_vacancies, f, ensure_ascii=False)
+        cls.vacancies_by_same_salary_json_dump(dict_vacancies)
 
     @classmethod
     def get_vacancies_by_same_or_bigger_salary(cls, user_value: int):
-        dict_vacancies = cls.json_load()
+        dict_vacancies = cls.vacancies_json_load()
         arr_vacancies = dict_vacancies["items"]
         chosen_vacancies = []
         for vacancy in arr_vacancies:
@@ -118,19 +167,16 @@ class JSONSaver(Saver):
                 chosen_vacancies.append(vacancy)
 
         dict_vacancies["items"] = chosen_vacancies
-        with open(os.path.join("..", "files", "vacancies_by_same_or_bigger_salary.json"), "w", encoding='utf-8') as f:
-            json.dump(dict_vacancies, f, ensure_ascii=False)
+        cls.vacancies_by_same_or_bigger_salary_json_dump(dict_vacancies)
 
     @classmethod
     def sort_vacancies_by_keywords(cls, keywords_arr, switch):
         if switch == "1":
-            dict_vacancies = cls.json_load()
+            dict_vacancies = cls.vacancies_json_load()
         elif switch == "2":
-            with open(os.path.join("..", "files", "vacancies_by_same_salary.json"), "r", encoding='utf-8') as f:
-                dict_vacancies = json.load(f)
+            dict_vacancies = cls.vacancies_by_same_salary_json_load()
         elif switch == "3":
-            with open(os.path.join("..", "files", "vacancies_by_same_or_bigger_salary.json"), "r", encoding='utf-8') as f:
-                dict_vacancies = json.load(f)
+            dict_vacancies = cls.vacancies_by_same_or_bigger_salary_json_load()
         else:
             raise ValueError("Переменная switch выходит за допустимые лимиты")
 
@@ -148,9 +194,37 @@ class JSONSaver(Saver):
             print("Нет вакансий, подходящих по заданным ключевым словам\n")
         else:
             dict_vacancies["items"] = arr_vacancies
-            with open(os.path.join("..", "files", "vacancies_with_keywords.json"), "w", encoding='utf-8') as f:
-                json.dump(dict_vacancies, f, ensure_ascii=False)
+            cls.vacancies_with_keywords_json_dump(dict_vacancies)
             print("Подходящие вакансии записаны в файл vacancies_with_keywords.json\n")
 
-
-
+    @classmethod
+    def return_arr_from_file(cls, switch):
+        if switch == "1":
+            try:
+                dict_vacancies = cls.vacancies_json_load()
+            except FileNotFoundError:
+                print("Файл не найден\n")
+                return None
+        elif switch == "2":
+            try:
+                dict_vacancies = cls.vacancies_by_same_salary_json_load()
+            except FileNotFoundError:
+                print("Файл не найден\n")
+                return None
+        elif switch == "3":
+            try:
+                dict_vacancies = cls.vacancies_by_same_or_bigger_salary_json_load()
+            except FileNotFoundError:
+                print("Файл не найден\n")
+                return None
+        elif switch == "4":
+            try:
+                dict_vacancies = cls.vacancies_with_keywords_json_load()
+            except FileNotFoundError:
+                print("Файл не найден\n")
+                return None
+        else:
+            print("Переменная switch выходит за допустимые лимиты")
+            return None
+        arr_vacancies = dict_vacancies["items"]
+        return arr_vacancies
