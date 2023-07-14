@@ -103,7 +103,7 @@ def main():
                     if user_value is None:
                         continue
                     JSONSaver.get_vacancies_be_same_salary(user_value)
-                    print("Вакансии с желаемым уровнем зарплаты сохранены в файле vacancies_by_same_salary.json")
+                    print("Вакансии с желаемым уровнем зарплаты сохранены в файле vacancies_by_same_salary.json\n")
                     break
                 elif switch == "2":
                     user_value = get_user_value()
@@ -111,7 +111,7 @@ def main():
                         continue
                     JSONSaver.get_vacancies_by_same_or_bigger_salary(user_value)
                     print(
-                        "Вакансии с желаемым уровнем зарплаты сохранены в файле vacancies_by_same_or_bigger_salary.json")
+                        "Вакансии с желаемым уровнем зарплаты сохранены в файле vacancies_by_same_or_bigger_salary.json\n")
                     break
 
                 elif switch == "0":

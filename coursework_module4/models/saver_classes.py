@@ -39,6 +39,9 @@ class Saver(ABC):
 class JSONSaver(Saver):
     @staticmethod
     def create_json_format(vacancies):
+        """
+        Создает массив вакансий для записи в JSON-файл
+        """
         json_vacancies_arr = []
         for vacancy in vacancies:
             single_vacancy_dict = {
@@ -55,6 +58,9 @@ class JSONSaver(Saver):
             json_vacancies_arr.append(single_vacancy_dict)
         return json_vacancies_arr
 
+    """
+    Фукнции для записи и излечения данных из четырех JSON-файлов
+    """
     @staticmethod
     def vacancies_json_dump(dict_vacancies):
         with open(os.path.join("..", "files", "vacancies.json"), "w", encoding='utf-8') as f:
@@ -101,12 +107,20 @@ class JSONSaver(Saver):
 
     @classmethod
     def write_vacancies(cls, vacancies):
+        """
+        Функция для записи массива экземпляров класса Vacancy в файл vacancies.json
+        в формате JSON
+        """
         json_vacancies_arr = cls.create_json_format(vacancies)
         dict_vacancies = {"items": json_vacancies_arr}
         cls.vacancies_json_dump(dict_vacancies)
 
     @classmethod
     def add_vacancies(cls, vacancies_to_add):
+        """
+        Функция для записи массива экземпляров класса Vacancy в файл vacancies.json
+        в формате JSON (старые записи из файла не стираются)
+        """
         dict_vacancies = cls.vacancies_json_load()
         old_vacancies = dict_vacancies["items"]
         new_vacancies = cls.create_json_format(vacancies_to_add)
@@ -116,6 +130,9 @@ class JSONSaver(Saver):
 
     @classmethod
     def delete_vacancy(cls, vacancy_id, switch):
+        """
+        Функция для удаления записей из четырех .json файлов
+        """
         arr_vacancies = cls.return_arr_from_file(switch)
         if arr_vacancies is None:
             return None
@@ -147,6 +164,11 @@ class JSONSaver(Saver):
 
     @classmethod
     def get_vacancies_be_same_salary(cls, user_value: int):
+        """
+        Сортирует вакансии из файла vacancies.json и сохраняет в
+        файл vacancies_by_same_salary.json только те вакансии, в
+        которых значение зарплаты строго равно числу, введенному пользователем
+        """
         dict_vacancies = cls.vacancies_json_load()
         arr_vacancies = dict_vacancies["items"]
         chosen_vacancies = []
@@ -159,6 +181,11 @@ class JSONSaver(Saver):
 
     @classmethod
     def get_vacancies_by_same_or_bigger_salary(cls, user_value: int):
+        """
+        Сортирует вакансии из файла vacancies.json и сохраняет в
+        файл vacancies_by_same_or_bigger_salary.json только те вакансии, в
+        которых значение зарплаты больше либо равно числу, введенному пользователем
+        """
         dict_vacancies = cls.vacancies_json_load()
         arr_vacancies = dict_vacancies["items"]
         chosen_vacancies = []
@@ -171,6 +198,12 @@ class JSONSaver(Saver):
 
     @classmethod
     def sort_vacancies_by_keywords(cls, keywords_arr, switch):
+        """
+        Сортирует вакансии из файлов vacancies.json, vacancies_by_same_salary.json,
+        vacancies_by_same_or_bigger_salary.json и сохраняет в
+        файл vacancies_with_keywords.json только те вакансии, в
+        описании которых встретились все введенные пользователем ключевые слова
+        """
         if switch == "1":
             dict_vacancies = cls.vacancies_json_load()
         elif switch == "2":
@@ -199,6 +232,9 @@ class JSONSaver(Saver):
 
     @classmethod
     def return_arr_from_file(cls, switch):
+        """
+        Возвращает массив вакансий в JSON формате из четырех файлов
+        """
         if switch == "1":
             try:
                 dict_vacancies = cls.vacancies_json_load()

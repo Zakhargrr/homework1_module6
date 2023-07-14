@@ -4,6 +4,17 @@ import datetime
 class Vacancy:
 
     def __init__(self, vacancy_id, title, url, published_at, salary_from, salary_to, currency, address, requirements):
+        """
+        vacancy_id: ID вакансии
+        title: Название вакансии
+        url: Ссылка на вакансию
+        published_at: Дата публикации вакансии
+        salary_from: Нижняя планка зарплаты
+        salary_to: Верхняя планка зарплаты
+        currency: Валюта, в которой выплачивается зарплата
+        address: Адрес работы
+        requirements: Условия работы
+        """
         self.__vacancy_id = vacancy_id
         self.__title: str = title
         self.__url: str = url
@@ -62,6 +73,9 @@ class Vacancy:
     def requirements(self):
         return self.__requirements
 
+    """
+    Магические методы, отвечаюющие за сравнение вакансий по зарплате
+    """
     def __lt__(self, other):
         if issubclass(other.__class__, self.__class__):
             if self.__salary_to_compare < other.__salary_to_compare:
@@ -109,6 +123,11 @@ class Vacancy:
 
     @classmethod
     def initialize_hh_vacancies(cls, vacancies):
+        """
+        Получает массив вакансий с сайта HH.ru
+        Создает массив, наполненный экземплярами класса Vacancy с полями,
+        которые инициализированны данными, полуенными от API
+        """
         arr_vacancies = []
         for vacancy in vacancies:
             vacancy_id = vacancy["id"]
@@ -158,6 +177,11 @@ class Vacancy:
 
     @classmethod
     def initialize_superjob_vacancies(cls, vacancies):
+        """
+        Получает массив вакансий с сайта SuperJob.ru
+        Создает массив, наполненный экземплярами класса Vacancy с полями,
+        которые инициализированны данными, полуенными от API
+        """
         arr_vacancies = []
         for vacancy in vacancies:
             vacancy_id = str(vacancy["id"])
@@ -194,6 +218,10 @@ class Vacancy:
 
     @staticmethod
     def get_top_vacancies(parsed_vacs_arr):
+        """
+        Получает массив экземпляров Vacancy
+        Возвращает массив вакансий, отсортированных по убыванию зарплаты
+        """
         if len(parsed_vacs_arr) == 0:
             print("В списке нет вакансий\n")
             return parsed_vacs_arr
