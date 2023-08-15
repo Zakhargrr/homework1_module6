@@ -3,7 +3,8 @@ import datetime
 
 class Vacancy:
 
-    def __init__(self, vacancy_id, title, url, published_at, salary_from, salary_to, currency, requirements):
+    def __init__(self, vacancy_id, title, url, published_at, salary_from, salary_to, currency, company_name,
+                 requirements):
         """
         vacancy_id: ID вакансии
         title: Название вакансии
@@ -12,6 +13,7 @@ class Vacancy:
         salary_from: Нижняя планка зарплаты
         salary_to: Верхняя планка зарплаты
         currency: Валюта, в которой выплачивается зарплата
+        company_name: Название компании
         requirements: Условия работы
         """
         self.__vacancy_id = vacancy_id
@@ -21,6 +23,7 @@ class Vacancy:
         self.__salary_from: str = salary_from
         self.__salary_to: str = salary_to
         self.__currency: str = currency
+        self.__company_name: str = company_name
         self.__requirements: str = requirements
 
     @property
@@ -50,6 +53,10 @@ class Vacancy:
     @property
     def currency(self):
         return self.__currency
+
+    @property
+    def company_name(self):
+        return self.__company_name
 
     @property
     def requirements(self):
@@ -85,6 +92,7 @@ class Vacancy:
             else:
                 salary_from = int(vacancy["salary"]["from"])
                 salary_to = int(vacancy["salary"]["to"])
+        company_name = vacancy["employer"]["name"]
 
         if vacancy["snippet"]["requirement"] is None:
             requirement = ""
@@ -96,7 +104,7 @@ class Vacancy:
         else:
             responsibility = vacancy["snippet"]["responsibility"]
         requirements = requirement + responsibility
-        hh_vacancy = cls(vacancy_id, title, url, published_at, salary_from, salary_to, currency,
+        hh_vacancy = cls(vacancy_id, title, url, published_at, salary_from, salary_to, currency, company_name,
                          requirements)
 
         return hh_vacancy
