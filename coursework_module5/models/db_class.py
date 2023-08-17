@@ -54,7 +54,7 @@ class DBManager:
                                  parsed_vacancy.published_at, parsed_vacancy.salary_from, parsed_vacancy.salary_to,
                                  parsed_vacancy.currency, parsed_vacancy.company_name, parsed_vacancy.requirements))
 
-                if page == 4:
+                if page == 4:  # для удобства проверки максимальный лимит записей для каждой компании ограничен 500
                     break
                 page += 1
         conn.commit()
@@ -77,7 +77,6 @@ class DBManager:
                 cur.execute(f"SELECT company_name, COUNT(*) FROM {employer} GROUP BY company_name")
                 response = cur.fetchall()
                 vacancies += response
-                # result += str(response[0][0]) + ": " + str(response[0][1]) + "\n"
         return vacancies
 
     def get_all_vacancies(self):
@@ -128,4 +127,27 @@ class DBManager:
                 vacancies += response
         return vacancies
 
+    @staticmethod
+    def print_array(arr):
+        for elem in arr:
+            print("Компания:", elem[0])
+            print("Названиие:", elem[1])
 
+            if elem[2] is None:
+                salary_from = "не указано"
+            else:
+                salary_from = elem[2]
+            print("Зарплата от:", salary_from)
+
+            if elem[3] is None:
+                salary_from = "не указано"
+            else:
+                salary_from = elem[3]
+            print("Зарплата до:", salary_from)
+
+            if elem[4] is None:
+                currency = "не указано"
+            else:
+                currency = elem[4]
+            print("Валюта:", currency)
+            print("Ссылка:", elem[5], "\n")
