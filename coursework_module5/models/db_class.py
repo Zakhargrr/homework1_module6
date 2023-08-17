@@ -71,20 +71,61 @@ class DBManager:
 
     def get_companies_and_vacancies_count(self):
         conn = self.get_connection()
-        result = ""
+        vacancies = []
         with conn.cursor() as cur:
             for employer in self.employers:
                 cur.execute(f"SELECT company_name, COUNT(*) FROM {employer} GROUP BY company_name")
-                statistics = cur.fetchall()
-                result += str(statistics[0][0]) + ": " + str(statistics[0][1]) + "\n"
-        return result
+                response = cur.fetchall()
+                vacancies += response
+                # result += str(response[0][0]) + ": " + str(response[0][1]) + "\n"
+        return vacancies
 
     def get_all_vacancies(self):
         conn = self.get_connection()
-        vacancies_arr = []
+        vacancies = []
+        with conn.cursor() as cur:
+            for employer in self.employers:
+                cur.execute(f"SELECT company_name, title, salary_from, salary_to, currency, url FROM {employer}")
+                response = cur.fetchall()
+                vacancies += response
+        return vacancies
+
+    def get_avg_salary(self):
+        conn = self.get_connection()
+        total_salary = 0
+        counter = 0
+        with conn.cursor() as cur:
+            for employer in self.employers:
+                cur.execute(f"SELECT (AVG(salary_from) + AVG(salary_to))/2 FROM {employer} WHERE currency = 'RUB'")
+                current_avg_salary = cur.fetchall()
+                if current_avg_salary[0][0] is not None:
+                    total_salary += current_avg_salary[0][0]
+                    counter += 1
+        avg_salary = total_salary / counter
+        return round(avg_salary, 4)
+
+    def get_vacancies_with_higher_salary(self):
+        conn = self.get_connection()
+        avg_salary = self.get_avg_salary()
+        vacancies = []
+        with conn.cursor() as cur:
+            for employer in self.employers:
+                cur.execute(f"""SELECT company_name, title, salary_from, salary_to, currency, url FROM {employer}
+                                                WHERE (salary_from > {avg_salary} OR salary_to > {avg_salary}) 
+                                                AND currency = 'RUB'""")
+                response = cur.fetchall()
+                vacancies += response
+        return vacancies
+
+    def get_vacancies_with_keyword(self, keyword):
+        conn = self.get_connection()
+        vacancies = []
+        with conn.cursor() as cur:
+            for employer in self.employers:
+                cur.execute(f"""SELECT company_name, title, salary_from, salary_to, currency, url FROM {employer} 
+                                        WHERE title LIKE '%{keyword}%'""")
+                response = cur.fetchall()
+                vacancies += response
+        return vacancies
 
 
-
-db_manager = DBManager("coursework_module5", "12345678")
-result = db_manager.get_companies_and_vacancies_count()
-print(result)
