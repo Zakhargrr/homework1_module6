@@ -12,5 +12,3 @@ class HeadHunterAPI:
         self.__vacancies = vacancies.json()
         self.__status_code = vacancies.status_code
         return self.__vacancies, self.__status_code
-
-

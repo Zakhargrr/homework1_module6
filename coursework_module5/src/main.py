@@ -1,11 +1,12 @@
 import psycopg2
+
 from models.db_class import DBManager
 
 
 def main():
     print("Введите имя базы данных, к которой нужно подключиться")
     db_name = input()
-    print("Введите пароль от базы данных") # имя и пароль должны совпадать с данными бд, введенными в db_script.py
+    print("Введите пароль от базы данных")  # имя и пароль должны совпадать с данными бд, введенными в db_script.py
     db_pwd = input()
     db_manager = DBManager(db_name, db_pwd)
     try:

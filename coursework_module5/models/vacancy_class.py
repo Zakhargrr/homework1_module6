@@ -1,6 +1,3 @@
-import datetime
-
-
 class Vacancy:
 
     def __init__(self, vacancy_id, title, url, published_at, salary_from, salary_to, currency, company_name,

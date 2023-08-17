@@ -1,7 +1,7 @@
 from models.db_class import DBManager
 
-db_manager = DBManager("coursework_module5",
-                       "12345678")  # введите имя и пароль от базы данных, в которых хотите создать таблицы
+db_manager = DBManager("db_name",
+                       "db_password")  # введите имя и пароль от базы данных, в которых хотите создать таблицы
 
 db_manager.create_table("yandex", "1740")
 db_manager.create_table("sberbank", "3529")
